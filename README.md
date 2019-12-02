@@ -1,6 +1,14 @@
-# PHP library what manages HTTP responses for javascript library AutoAjax
+# AutoAjax PHP library
 
-AutoAjax package for Laravel, VueJs and plain JS form submissions and automatic validation. This is part of package for plain PHP or Laravel projects.
+PHP library what manages HTTP responses for javascript library AutoAjax. Package is for Laravel, VueJs and plain JS form submissions and automatic validation. 
+
+This is part of package for plain PHP or Laravel projects. More for javascript part of this package on [autoAjax.js](https://github.com/MarekGogol/autoajax)
+
+## Features
+- automatically builds request data from form inputs.
+- automatically bind validation error messages to each input from Laravel validation
+- VueJs integration
+- PlainJs integration
 
 ## Composer installation
 `composer require "crudadmin/autoajax"`
