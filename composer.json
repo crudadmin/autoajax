@@ -2,6 +2,7 @@
     "name": "crudadmin/autoajax",
     "description": "Auto Ajax form submission for Laravel or plain PHP",
     "type": "library",
+    "license": "MIT",
     "authors": [
         {
             "name": "Marek gogol",
