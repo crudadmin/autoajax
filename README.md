@@ -37,10 +37,6 @@ autoAjax()->success('Thank you! Your for has been successfully sent.')->throw();
 
 ## API
 ```php
-//If you want modify all success/error messages globally. You can do it in AppServiceProvider or somewhere else in your app configuration like that.
-autoAjax()->setGlobalMessage('success', 'Changes has been successfully saved.');
-autoAjax()->setGlobalMessage('error', 'Something went wrong. Try again later.');
-
 //Success messages.
 autoAjax()->success('Success message');
 autoAjax()->message('Success message');
@@ -65,6 +61,10 @@ autoAjax()->reload();
 
 //If you need run own JS callback after response
 autoAjax()->title('This is my message')->callback('alert(1)');
+
+//If you want modify all success/error messages globally. You can do it in AppServiceProvider or somewhere else in your app configuration like that.
+autoAjax()->setGlobalMessage('success', 'Changes has been successfully saved.');
+autoAjax()->setGlobalMessage('error', 'Something went wrong. Try again later.');
 ```
 
 ## JSON Response
@@ -80,23 +80,16 @@ autoAjax()->title('This is my message')->callback('alert(1)');
 }
 ```
 
-##### Callback
-Javascript callback for autoAjax library
+**callback** - Javascript callback for autoAjax library
 
-##### Data
-Array of additional data for autoAjax library and your responses in VueJs or PlainJs application
+**data** - Array of additional data for autoAjax library and your responses in VueJs or PlainJs application
 
-##### Error
-Is response error type?
+**error** - Is response error type?
 
-##### Message
-Message output.
+**message** - Message output.
 
-##### Redirect
-URL where should be user redirected after response request. AutoAjax.js will handle it.
+**redirect** - URL where should be user redirected after response request. AutoAjax.js will handle it.
 
-##### Title
-Your custom title for modals message.
+**title** - Your custom title for modals message.
 
-##### Type
-Message or modal. You can customize your response for alert messages or for modal windows.
+**type** - Message or modal. You can customize your response for alert messages or for modal windows.
