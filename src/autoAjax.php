@@ -1,29 +1,64 @@
 <?php
 
-namespace App\Core;
+namespace AutoAjax;
 
-use Illuminate\Contracts\Support\Renderable;
+use Symfony\Component\HttpFoundation\JsonResponse;
 
-class AutoAjax implements Renderable
+class AutoAjax
 {
+    /*
+     * Title
+     */
     private $title = null;
 
+    /*
+     * Message
+     */
     private $message = null;
 
+    /*
+     * Js callback
+     */
     private $callback = null;
 
+    /*
+     * Redirect url
+     */
     private $redirect = null;
 
+    /*
+     * Is modal
+     */
     private $modal = false;
 
+    /*
+     * Error type
+     */
     private $error = false;
 
+    /*
+     * Http code
+     */
     private $code = 200;
 
+    /*
+     * Request data
+     */
     private $data = [];
 
     /*
+     * Defined messages
+     */
+    static $messages = [
+        'error' => 'Something went wrong. Try again later.',
+        'success' => 'Changes has been successfully saved.',
+    ];
+
+    /**
      * Set title response
+     *
+     * @param  string  $title
+     * @return this
      */
     public function title($title)
     {
@@ -32,8 +67,11 @@ class AutoAjax implements Renderable
         return $this;
     }
 
-    /*
+    /**
      * Set success message response
+     *
+     * @param  string  $message
+     * @return this
      */
     public function message($message)
     {
@@ -43,16 +81,25 @@ class AutoAjax implements Renderable
         return $this;
     }
 
+    /**
+     * Set success message response
+     *
+     * @param  string  $message
+     * @return this
+     */
     public function success($message = null)
     {
         if ( ! $message )
-            $message = _('Changes has been successfully saved.');
+            $message = self::$messages['success'];
 
         return $this->message($message);
     }
 
-    /*
+    /**
      * Set error message response
+     *
+     * @param  string  $message
+     * @return this
      */
     public function error($message)
     {
@@ -62,8 +109,11 @@ class AutoAjax implements Renderable
         return $this;
     }
 
-    /*
-     * Set callback after response, or modal close
+    /**
+     * Set javascript callback after response
+     *
+     * @param  string  $callback
+     * @return this
      */
     public function callback($callback)
     {
@@ -72,8 +122,11 @@ class AutoAjax implements Renderable
         return $this;
     }
 
-    /*
+    /**
      * Set redirect after response
+     *
+     * @param  string  $redirect
+     * @return this
      */
     public function redirect($redirect)
     {
@@ -82,8 +135,11 @@ class AutoAjax implements Renderable
         return $this;
     }
 
-    /*
+    /**
      * Set additional data
+     *
+     * @param  mixed/array  $data
+     * @return this
      */
     public function data($data)
     {
@@ -92,8 +148,11 @@ class AutoAjax implements Renderable
         return $this;
     }
 
-    /*
-     * Set modal
+    /**
+     * Return message with modal type
+     *
+     * @param  null|string  $message
+     * @return this
      */
     public function modal($message = null)
     {
@@ -105,8 +164,10 @@ class AutoAjax implements Renderable
         return $this;
     }
 
-    /*
-     * Reload afer callback close
+    /**
+     * Reload webpage after response
+     *
+     * @return this
      */
     public function reload()
     {
@@ -115,16 +176,22 @@ class AutoAjax implements Renderable
         return $this;
     }
 
-    public function render()
+    /**
+     * Send success save message
+     *
+     * @param  null|string  $save
+     * @return Symfony\Component\HttpFoundation\Response
+     */
+    public function save($save = null)
     {
-        return $this->throw();
+        return $this->message($save ?: self::$messages['success']);
     }
 
-    public function save()
-    {
-        return $this->message(_('Změny byly úspěšně uloženy.'));
-    }
-
+    /**
+     * Build JSON response
+     *
+     * @return  array
+     */
     public function getResponse()
     {
         $response = [
@@ -140,9 +207,32 @@ class AutoAjax implements Renderable
         return $response;
     }
 
+    /*
+     * Alias for JSON response
+     */
+    public function render()
+    {
+        return $this->throw();
+    }
+
+    /*
+     * Throw JSON response
+     */
     public function throw()
     {
-        throw new \Illuminate\Http\Exceptions\HttpResponseException( response()->json($this->getResponse(), $this->code), $this->code );
+        $response = new JsonResponse($this->getResponse(), $this->code);
+
+        die($response->send());
+    }
+
+    /**
+     * Throw response for laravel controller response
+     *
+     * @return  string
+     */
+    public function __toString()
+    {
+        return $this->throw();
     }
 }
 
