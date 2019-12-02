@@ -37,6 +37,10 @@ autoAjax()->success('Thank you! Your for has been successfully sent.')->throw();
 
 ## API
 ```php
+//If you want modify all success/error messages globally. You can do it in AppServiceProvider or somewhere else in your app configuration like that.
+autoAjax()->setGlobalMessage('success', 'Changes has been successfully saved.');
+autoAjax()->setGlobalMessage('error', 'Something went wrong. Try again later.');
+
 //Success messages.
 autoAjax()->success('Success message');
 autoAjax()->message('Success message');
