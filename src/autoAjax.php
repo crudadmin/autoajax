@@ -89,9 +89,6 @@ class AutoAjax
      */
     public function success($message = null)
     {
-        if ( ! $message )
-            $message = self::$messages['success'];
-
         return $this->message($message);
     }
 
@@ -99,12 +96,31 @@ class AutoAjax
      * Set error message response
      *
      * @param  string  $message
+     * @param  integer $code
      * @return this
      */
-    public function error($message)
+    public function error($message = null, $code = null)
     {
-        $this->message = $message;
+        $this->message($message ?: self::$messages['error']);
+
         $this->error = true;
+
+        if ( $code ) {
+            $this->code = $code;
+        }
+
+        return $this;
+    }
+
+    /**
+     * Set code of response
+     *
+     * @param  integer $code
+     * @return this
+     */
+    public function code($code)
+    {
+        $this->code = $code;
 
         return $this;
     }
@@ -198,13 +214,24 @@ class AutoAjax
             'title' => $this->title ?: ($this->error ? _('Whoopsie :( !') : _('Success')),
             'redirect' => $this->redirect,
             'callback' => $this->callback,
-            'type' => $this->modal ? 'modal' : 'normal',
+            'type' => $this->modal ? 'modal' : 'message',
             'error' => $this->error,
             'message' => $this->message,
             'data' => $this->data,
         ];
 
         return $response;
+    }
+
+    /**
+     * Set global messages for autoAjax
+     *
+     * @param  string  $type
+     * @param  string  $message
+     */
+    public function setGlobalMessage($type, $message)
+    {
+        self::$messages[$type] = $message;
     }
 
     /*
