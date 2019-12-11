@@ -253,6 +253,19 @@ class AutoAjax
     }
 
     /**
+     * Throw validation error response
+     *
+     * @param  array  $errors
+     * @return void
+     */
+    public function throwValidation(array $errors = [])
+    {
+        $response = new JsonResponse($errors, 422);
+
+        die($response->send());
+    }
+
+    /**
      * Throw response for laravel controller response
      *
      * @return  string
