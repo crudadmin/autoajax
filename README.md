@@ -95,3 +95,28 @@ autoAjax()->setGlobalMessage('error', 'Something went wrong. Try again later.');
 **title** - Your custom title for modals message.
 
 **type** - Message or modal. You can customize your response for alert messages or for modal windows.
+
+## Validation response
+You can throw validation response with Laravel validator
+```php
+Validator::make($request->all(), [
+    'title' => 'required|unique:posts|max:255',
+    'body' => 'required',
+])->validate();
+```
+
+You can also throw validation message by your own with **throwValidation** method
+```php
+autoAjax()->throwValidation([
+    'username' => 'Validation message for username',
+    'password' => 'Validation message for password',
+]);
+```
+
+Or manualy send JSON request with error code **422 Unprocessable Entity**
+```
+{
+    "email": ["Please fill this field."],
+    "phone":["Please fill this field."]
+}
+```
