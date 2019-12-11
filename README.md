@@ -117,6 +117,6 @@ Or manualy send JSON request with error code **422 Unprocessable Entity**
 ```
 {
     "email": ["Please fill this field."],
-    "phone":["Please fill this field."]
+    "phone": ["Please fill this field."]
 }
 ```
