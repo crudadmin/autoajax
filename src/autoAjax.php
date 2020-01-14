@@ -3,8 +3,10 @@
 namespace AutoAjax;
 
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
-class AutoAjax
+class AutoAjax extends Response
 {
     /*
      * Title
@@ -266,13 +268,20 @@ class AutoAjax
     }
 
     /**
-     * Throw response for laravel controller response
+     * Prepare request for laravel
      *
-     * @return  string
+     * @param  Request  $request
+     * @return
      */
-    public function __toString()
+    public function prepare(Request $request)
     {
-        return $this->throw();
+        $this->setContent(json_encode($this->getResponse()));
+
+        $this->setStatusCode($this->code);
+
+        $this->headers->set('Content-Type', 'application/json');
+
+        return parent::prepare($request);
     }
 }
 
