@@ -199,9 +199,20 @@ trait AutoAjax
      * @param  null|string  $save
      * @return Symfony\Component\HttpFoundation\Response
      */
-    public function save($save = null)
+    public function save($message = null)
     {
-        return $this->message($save ?: self::$messages['success']);
+        return $this->message($message ?: self::$messages['success']);
+    }
+
+    /**
+     * Alias
+     *
+     * @param  string  $message
+     * @return  Symfony\Component\HttpFoundation\Response
+     */
+    public function saved($message = null)
+    {
+        return $this->save($message);
     }
 
     /**
