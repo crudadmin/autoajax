@@ -55,6 +55,35 @@ trait AutoAjax
         'success' => 'Changes has been successfully saved.',
     ];
 
+    /*
+     * AutoAjax events
+     */
+    static $events = [
+        'onResponse' => null,
+    ];
+
+    /**
+     * Set eventn
+     *
+     * @param  string  $type
+     * @param  callable  $callback
+     */
+    static function setEvent($type, callable $callback)
+    {
+        self::$events[$type] = $callback;
+    }
+
+    /**
+     * Set global messages for autoAjax
+     *
+     * @param  string  $type
+     * @param  string  $message
+     */
+    public function setGlobalMessage($type, $message)
+    {
+        self::$messages[$type] = $message;
+    }
+
     /**
      * Set title response
      *
@@ -232,19 +261,13 @@ trait AutoAjax
             'data' => $this->data,
         ];
 
+        if ( is_callable(self::$events['onResponse']) ){
+            $response = self::$events['onResponse']($response);
+        }
+
         return $response;
     }
 
-    /**
-     * Set global messages for autoAjax
-     *
-     * @param  string  $type
-     * @param  string  $message
-     */
-    public function setGlobalMessage($type, $message)
-    {
-        self::$messages[$type] = $message;
-    }
 
     /*
      * Alias for JSON response
