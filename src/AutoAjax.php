@@ -52,7 +52,7 @@ trait AutoAjax
      */
     static $messages = [
         'error' => 'Something went wrong. Try again later.',
-        'success' => 'Changes has been successfully saved.',
+        'success' => 'Changes have been successfully saved.',
     ];
 
     /*
