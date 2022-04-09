@@ -86,7 +86,7 @@ class AutoAjax extends Response
     {
         $this->message = $message;
 
-        $this->runEvent('onMessage', [$this]);
+        $this->runEvent('onMessage', [$this, $message]);
 
         return $this;
     }
