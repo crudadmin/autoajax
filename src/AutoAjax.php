@@ -2,87 +2,66 @@
 
 namespace AutoAjax;
 
+use AutoAjax\EventsTrait;
+use AutoAjax\MessagesTrait;
+use Illuminate\Http\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 
-trait AutoAjax
+class AutoAjax extends Response
 {
+    use EventsTrait,
+        MessagesTrait;
+
     /*
      * Title
      */
-    private $title = null;
+    public $title = null;
 
     /*
      * Message
      */
-    private $message = null;
+    public $message = null;
 
     /*
      * Js callback
      */
-    private $callback = null;
+    public $callback = null;
 
     /*
      * Redirect url
      */
-    private $redirect = null;
+    public $redirect = null;
 
     /*
      * Is modal
      */
-    private $modal = false;
+    public $modal = false;
 
     /*
      * Error type
      */
-    private $error = false;
+    public $error = false;
 
     /*
      * Http code
      */
-    private $code = 200;
+    public $code = 200;
 
     /*
      * Request data
      */
-    private $data = [];
+    public $data = [];
 
     /*
-     * Defined messages
+     * Response type
      */
-    static $messages = [
-        'error' => 'Something went wrong. Try again later.',
-        'success' => 'Changes have been successfully saved.',
-    ];
-
-    /*
-     * AutoAjax events
-     */
-    static $events = [
-        'onResponse' => null,
-    ];
+    public $type;
 
     /**
-     * Set eventn
-     *
-     * @param  string  $type
-     * @param  callable  $callback
+     * On auto ajax boot
      */
-    static function setEvent($type, callable $callback)
-    {
-        self::$events[$type] = $callback;
-    }
-
-    /**
-     * Set global messages for autoAjax
-     *
-     * @param  string  $type
-     * @param  string  $message
-     */
-    public function setGlobalMessage($type, $message)
-    {
-        self::$messages[$type] = $message;
-    }
+    public function boot(){}
 
     /**
      * Set title response
@@ -106,7 +85,8 @@ trait AutoAjax
     public function message($message)
     {
         $this->message = $message;
-        $this->error = false;
+
+        $this->runEvent('onMessage', [$this]);
 
         return $this;
     }
@@ -119,7 +99,11 @@ trait AutoAjax
      */
     public function success($message = null)
     {
-        return $this->message($message);
+        $this->runEvent('onSuccess', [$this, $message]);
+
+        $this->message($message);
+
+        return $this;
     }
 
     /**
@@ -131,7 +115,9 @@ trait AutoAjax
      */
     public function error($message = null, $code = null)
     {
-        $this->message($message ?: self::$messages['error']);
+        $this->runEvent('onError', [$this, $message, $code]);
+
+        $this->message($message ?: $this->getMessage('error'));
 
         $this->error = true;
 
@@ -195,17 +181,17 @@ trait AutoAjax
     }
 
     /**
-     * Return message with modal type
+     * Set response type
      *
-     * @param  null|string  $message
+     * @param  null|string  $type
+     *
      * @return this
      */
-    public function modal($message = null)
+    public function type($type = null)
     {
-        if ( $message )
-            $this->message = $message;
-
-        $this->modal = true;
+        if ( $type ) {
+            $this->type = $type;
+        }
 
         return $this;
     }
@@ -230,18 +216,7 @@ trait AutoAjax
      */
     public function save($message = null)
     {
-        return $this->message($message ?: self::$messages['success']);
-    }
-
-    /**
-     * Alias
-     *
-     * @param  string  $message
-     * @return  Symfony\Component\HttpFoundation\Response
-     */
-    public function saved($message = null)
-    {
-        return $this->save($message);
+        return $this->message($message ?: $this->getMessage('success'));
     }
 
     /**
@@ -252,17 +227,17 @@ trait AutoAjax
     public function getResponse()
     {
         $response = [
-            'title' => $this->title ?: ($this->error ? _('Whoopsie :( !') : _('Success')),
+            'title' => $this->title,
             'redirect' => $this->redirect,
             'callback' => $this->callback,
-            'type' => $this->modal ? 'modal' : 'message',
+            'type' => $this->type,
             'error' => $this->error,
             'message' => $this->message,
             'data' => $this->data,
         ];
 
-        if ( is_callable(self::$events['onResponse']) ){
-            $response = self::$events['onResponse']($response);
+        if ( $this->getEvent('onResponse') ) {
+            $response = $this->runEvent('onResponse', [$response, $this]);
         }
 
         return $response;
@@ -306,7 +281,7 @@ trait AutoAjax
      * @param  Request  $request
      * @return
      */
-    public function prepare(Request $request)
+    public function prepare(Request $request) :static
     {
         $this->setContent(json_encode($this->getResponse()));
 
