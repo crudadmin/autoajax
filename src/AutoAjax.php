@@ -226,15 +226,19 @@ class AutoAjax extends Response
      */
     public function getResponse()
     {
-        $response = [
-            'title' => $this->title,
-            'redirect' => $this->redirect,
-            'callback' => $this->callback,
-            'type' => $this->type,
-            'error' => $this->error,
-            'message' => $this->message,
-            'data' => $this->data,
+        $response = [];
+
+        $addKeys = [
+            'type', 'title', 'message', 'redirect', 'callback', 'error', 'data'
         ];
+
+        foreach ($addKeys as $key) {
+            $value = $this->{$key} ?? null;
+
+            if ( is_null($value) === false ){
+                $response[$key] = $value;
+            }
+        }
 
         if ( $this->getEvent('onResponse') ) {
             $response = $this->runEvent('onResponse', [$response, $this]);
