@@ -8,10 +8,10 @@ trait EventsTrait
      * AutoAjax events
      */
     static $events = [
-        'onResponse' => null, // fn($response, $autoAjax) => {}
-        'onMessage' => null, // fn($autoAjax) => {}
-        'onSuccess' => null, // fn($autoAjax, $message) => {}
-        'onError' => null, // fn($autoAjax, $message, $code) => {}
+        'onResponse' => [], // fn($response, $autoAjax) => {}
+        'onMessage' => [], // fn($autoAjax) => {}
+        'onSuccess' => [], // fn($autoAjax, $message) => {}
+        'onError' => [], // fn($autoAjax, $message, $code) => {}
     ];
 
     /**
@@ -22,7 +22,7 @@ trait EventsTrait
      */
     static function setEvent($type, callable $callback)
     {
-        self::$events[$type] = $callback;
+        self::$events[$type][] = $callback;
     }
 
     public function getEvents()
@@ -30,17 +30,12 @@ trait EventsTrait
         return self::$events;
     }
 
-    public function getEvent($eventName)
-    {
-        $event = $this->getEvents()[$eventName] ?? null;
-
-        return $event && is_callable($event) ? $event : null;
-    }
-
     public function runEvent($eventName, array $arguments)
     {
-        if ( $event = $this->getEvent($eventName) ){
-            return $event(...$arguments);
+        $events = $this->getEvents()[$eventName] ?? [];;
+
+        foreach ($events as $event) {
+            $event(...$arguments);
         }
     }
 }
