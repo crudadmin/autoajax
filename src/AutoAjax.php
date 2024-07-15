@@ -54,6 +54,11 @@ class AutoAjax extends Response
     public $data = [];
 
     /*
+     * Store data
+     */
+    public $store = [];
+
+    /*
      * Response type
      */
     public $type;
@@ -181,6 +186,19 @@ class AutoAjax extends Response
     }
 
     /**
+     * Set store store
+     *
+     * @param  mixed/array  $data
+     * @return this
+     */
+    public function store($store)
+    {
+        $this->store = $store;
+
+        return $this;
+    }
+
+    /**
      * Set response type
      *
      * @param  null|string  $type
@@ -240,6 +258,8 @@ class AutoAjax extends Response
             }
         }
 
+        $response = $this->addStoreIntoResponse($response);
+
         if ( $this->getEvent('onResponse') ) {
             $response = $this->runEvent('onResponse', [$response, $this]);
         }
@@ -294,6 +314,18 @@ class AutoAjax extends Response
         $this->headers->set('Content-Type', 'application/json');
 
         return parent::prepare($request);
+    }
+
+    private function addStoreIntoResponse($response)
+    {
+        //Store support added
+        if ( config('autoajax.store', false) ){
+            $response['store'] = $this->store;
+        } else if ( is_array($this->store) && count($this->store) ) {
+            $response['data'] = array_merge($this->store, $response['data']);
+        }
+
+        return $response;
     }
 }
 
