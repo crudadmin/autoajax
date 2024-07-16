@@ -317,12 +317,16 @@ class AutoAjax extends Response
 
     private function addStoreIntoResponse($response)
     {
+        if ( !is_array($this->store) || count($this->store) == 0 ){
+            return $response;
+        }
+
         $storePath = config('autoajax.store_path', 'store');
 
         //Store support added
         if ( config('autoajax.store', false) ){
             Arr::set($response, $storePath, $this->store);
-        } else if ( is_array($this->store) && count($this->store) ) {
+        } else {
             $response['data'] = array_merge($this->store, $response['data']);
         }
 
