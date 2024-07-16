@@ -260,7 +260,7 @@ class AutoAjax extends Response
 
         $response = $this->addStoreIntoResponse($response);
 
-        $this->runEvent('onResponse', [&$response, $this]);
+        $response = $this->runEvent('onResponse', [&$response, $this], 1);
 
         return $response;
     }

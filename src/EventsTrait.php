@@ -30,12 +30,18 @@ trait EventsTrait
         return self::$events;
     }
 
-    public function runEvent($eventName, array $arguments)
+    public function runEvent($eventName, array $arguments, $returnParam = 1)
     {
-        $events = $this->getEvents()[$eventName] ?? [];;
+        $events = $this->getEvents()[$eventName] ?? [];
+
+        $response = $arguments[$returnParam];
 
         foreach ($events as $event) {
-            $event(...$arguments);
+            $response = $event(...$arguments);
+
+            $arguments[$returnParam] = $response ?: $arguments[$returnParam];
         }
+
+        return $response;
     }
 }
