@@ -5,6 +5,7 @@ namespace AutoAjax;
 use AutoAjax\EventsTrait;
 use AutoAjax\MessagesTrait;
 use Illuminate\Http\Response;
+use Illuminate\Support\Arr;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -316,9 +317,11 @@ class AutoAjax extends Response
 
     private function addStoreIntoResponse($response)
     {
+        $storePath = config('autoajax.store_path', 'store');
+
         //Store support added
         if ( config('autoajax.store', false) ){
-            $response['store'] = $this->store;
+            Arr::set($response, $storePath, $this->store);
         } else if ( is_array($this->store) && count($this->store) ) {
             $response['data'] = array_merge($this->store, $response['data']);
         }
