@@ -254,7 +254,13 @@ class AutoAjax extends Response
         foreach ($addKeys as $key) {
             $value = $this->{$key} ?? null;
 
-            if ( is_null($value) === false ){
+            if (
+                // Don't put empty values
+                is_null($value) === false &&
+
+                // Don't put empty array
+                (is_array($value) && count($value) === 0) === false
+            ){
                 $response[$key] = $value;
             }
         }
