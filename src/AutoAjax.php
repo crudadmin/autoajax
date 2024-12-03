@@ -333,7 +333,7 @@ class AutoAjax extends Response
         if ( config('autoajax.store', false) ){
             Arr::set($response, $storePath, $this->store);
         } else {
-            $response['data'] = array_merge($this->store, $response['data']);
+            $response['data'] = array_merge($this->store, $response['data'] ?? []);
         }
 
         return $response;
