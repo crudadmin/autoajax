@@ -4,10 +4,11 @@ namespace AutoAjax;
 
 use AutoAjax\EventsTrait;
 use AutoAjax\MessagesTrait;
-use Illuminate\Http\Response;
 use Illuminate\Support\Arr;
-use Symfony\Component\HttpFoundation\JsonResponse;
+use Illuminate\Http\Response;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Illuminate\Foundation\Http\Events\RequestHandled;
 
 class AutoAjax extends Response
 {
@@ -288,7 +289,13 @@ class AutoAjax extends Response
     {
         $response = new JsonResponse($this->getResponse(), $this->code);
 
-        die($response->send());
+        app('events')->dispatch(new RequestHandled(request(), $response));
+
+        $response->send();
+
+        app()->terminate();
+
+        exit;
     }
 
     /**
@@ -301,7 +308,13 @@ class AutoAjax extends Response
     {
         $response = new JsonResponse($errors, 422);
 
-        die($response->send());
+        app('events')->dispatch(new RequestHandled(request(), $response));
+
+        $response->send();
+
+        app()->terminate();
+
+        exit;
     }
 
     /**
