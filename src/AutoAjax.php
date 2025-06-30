@@ -289,7 +289,7 @@ class AutoAjax extends Response
     {
         $response = new JsonResponse($this->getResponse(), $this->code);
 
-        app('events')->dispatch(new RequestHandled(request(), $response));
+        $response = $this->handleLaravelEvents($response);
 
         $response->send();
 
@@ -308,7 +308,7 @@ class AutoAjax extends Response
     {
         $response = new JsonResponse($errors, 422);
 
-        app('events')->dispatch(new RequestHandled(request(), $response));
+        $response = $this->handleLaravelEvents($response);
 
         $response->send();
 
@@ -350,6 +350,44 @@ class AutoAjax extends Response
         }
 
         return $response;
+    }
+
+    /**
+     * Handle laravel events
+     *
+     * @param  mixed $response
+     * @return void
+     */
+    protected function handleLaravelEvents($response)
+    {
+        $request = request();
+
+        $response = $this->handleCors($response, $request);
+
+        app('events')->dispatch(new RequestHandled($request, $response));
+
+        return $response;
+    }
+
+    /**
+     * Add cors into throwed responses
+     *
+     * @param  mixed $response
+     * @return void
+     */
+    protected function handleCors($response, $request)
+    {
+        $corsClass = \Illuminate\Http\Middleware\HandleCors::class;
+
+        if ( class_exists($corsClass) === false ) {
+            return $response;
+        }
+
+        $corsMiddleware = app($corsClass);
+
+        return $corsMiddleware->handle($request, function () use ($response) {
+            return $response;
+        });
     }
 }
 
